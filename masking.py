@@ -1,12 +1,8 @@
 import numpy as np
 import cv2
-import pandas as pd
-import glob
-import os
 
 
 def create_mask(img, image_name, csv):
-    global boo
     image_id_new = int(image_name)
     selection = csv[csv.image_id == image_id_new]
     objects_vehicles = []
@@ -24,17 +20,3 @@ def create_mask(img, image_name, csv):
         mask = cv2.fillPoly(mask, [vrx], (255, 255, 255))
     masked = np.where(mask > 1, img, np.zeros(img.shape))
     return masked
-
-
-print("Working on it, please have patience")
-src_dir = 'dataset/training_imagery'
-dst_dir = 'dataset/masked_training/'
-df = pd.read_csv('dataset/test.csv', sep=',')
-for filename in glob.glob(os.path.join(src_dir, '*.jpg')):
-    im = cv2.imread(filename)
-    name = filename.replace(src_dir, '')
-    img_name = name.replace('.jpg', '')
-    img_name = img_name.replace('\\', '')
-    masked_img = create_mask(im, img_name, df)
-    cv2.imwrite(dst_dir + name, masked_img)
-print("Done")
