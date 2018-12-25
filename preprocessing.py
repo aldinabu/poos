@@ -29,9 +29,9 @@ def subtract_roi(img, image_name, csv):
 
 
 print("Working on it, please have patience")
-src_dir = 'dataset/training_imagery'
-dst_dir = 'dataset/preprocessed_training'
-df = pd.read_csv('dataset/train.csv', sep=',')
+src_dir = 'data2/train'
+dst_dir = 'data2/preprocessed_train'
+df = pd.read_csv('data2/train.csv', sep=',')
 br = 0
 for filename in glob.glob(os.path.join(src_dir, '*.jpg')):
     im = cv2.imread(filename)
