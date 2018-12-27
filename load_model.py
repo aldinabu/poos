@@ -46,113 +46,39 @@ def evaluation_indices(y_pred, y_test):
     return correctly_classified_indices, misclassified_indices
 
 
-# preparing data for predictions
-size = (30, 75)
-X_eval = list()
-y_eval = list()
-X_tag = list()
+def report(y_eval, cnn_pred, labels_index):
+    # one vs all approach
+    tp, tn, fp, fn = 0, 0, 0, 0
+    sensitivity = []
+    specificity = []
+    accuracy = []
+    precision = []
 
-# hatchback
-files = os.listdir('data/masked_rotated_h_val/small vehicle/hatchback/')
-files.sort()
-
-for i in range(0, len(files)):
-    X_eval.append(transform_image('data/masked_rotated_h_val/small vehicle/hatchback/' + files[i], size))
-    y_eval.append(0)
-    tag = files[i].replace('.jpg', '')
-    X_tag.append(int(tag))
-# jeep
-files = os.listdir('data/masked_rotated_h_val/small vehicle/jeep/')
-files.sort()
-
-for i in range(0, len(files)):
-    X_eval.append(transform_image('data/masked_rotated_h_val/small vehicle/jeep/' + files[i], size))
-    y_eval.append(1)
-    tag = files[i].replace('.jpg', '')
-    X_tag.append(int(tag))
-# minivan
-files = os.listdir('data/masked_rotated_h_val/small vehicle/minivan/')
-files.sort()
-
-for i in range(0, len(files)):
-    X_eval.append(transform_image('data/masked_rotated_h_val/small vehicle/minivan/' + files[i], size))
-    y_eval.append(2)
-    tag = files[i].replace('.jpg', '')
-    X_tag.append(int(tag))
-# pickup
-files = os.listdir('data/masked_rotated_h_val/small vehicle/pickup/')
-files.sort()
-
-for i in range(0, len(files)):
-    X_eval.append(transform_image('data/masked_rotated_h_val/small vehicle/pickup/' + files[i], size))
-    y_eval.append(3)
-    tag = files[i].replace('.jpg', '')
-    X_tag.append(int(tag))
-# sedan
-files = os.listdir('data/masked_rotated_h_val/small vehicle/sedan/')
-files.sort()
-
-for i in range(0, len(files)):
-    X_eval.append(transform_image('data/masked_rotated_h_val/small vehicle/sedan/' + files[i], size))
-    y_eval.append(4)
-    tag = files[i].replace('.jpg', '')
-    X_tag.append(int(tag))
-# van
-files = os.listdir('data/masked_rotated_h_val/small vehicle/van/')
-files.sort()
-
-for i in range(0, len(files)):
-    X_eval.append(transform_image('data/masked_rotated_h_val/small vehicle/van/' + files[i], size))
-    y_eval.append(5)
-    tag = files[i].replace('.jpg', '')
-    X_tag.append(int(tag))
-# stacking the arrays
-X_eval = np.vstack(X_eval)
-
-labels_index = {0: "hatchback", 1: "jeep", 2: "minivan", 3: "pickup", 4: "sedan", 5: "van"}
-
-
-# load the model
-cnn_classifier = tf.keras.models.load_model('vehicle_classification_model_dropout.h5')
-
-cnn_pred = cnn_classifier.predict_classes(X_eval, batch_size=32)
-
-pretty_cm(cnn_pred, y_eval, labels_index)
-correctly_classified_indices, misclassified_indices = evaluation_indices(cnn_pred, y_eval)
-
-plt.figure(figsize=(36, 6))
-shuffle(correctly_classified_indices)
-plt.show()
-
-for plot_index, good_index in enumerate(correctly_classified_indices[0:5]):
-    plt.subplot(1, 5, plot_index + 1)
-    plt.imshow(X_eval[good_index])
-    plt.title('Predicted: {}, Actual: {}'.format(labels_index[cnn_pred[good_index]],
-                                                 labels_index[y_eval[good_index]]), fontsize=5)
-plt.show()
-
-print(X_tag)
-print(list(cnn_pred))
-print(y_eval)
-predicted_dict = dict(zip(X_tag, list(cnn_pred)))
-actual_dict = dict(zip(X_tag, y_eval))
-
-print(len(X_tag))
-print(len(list(cnn_pred)))
-print(len(y_eval))
-
-df = pd.read_csv('data/val_csv.csv', sep=',')
-path = 'data/val'
-src_dir = path
-dst_dir = 'data/labeled_predicted_val'
-for filename in glob.glob(os.path.join(src_dir, '*.jpg')):
-    im = cv2.imread(filename)
-    name = filename.replace(src_dir, '')
-    img_name = name.replace('.jpg', '')
-    img_name = img_name.replace('\\', '')
-    labeled_img_p = label_vehicle(im.copy(), img_name, df, predicted_dict)
-    cv2.imwrite(dst_dir + name, labeled_img_p)
-    labeled_img_a = label_vehicle(im.copy(), img_name, df, actual_dict)
-    cv2.imwrite('data/labeled_actual_val' + name, labeled_img_a)
-print("Done")
-
+    for key in labels_index.keys():
+        for label, predict in zip(y_eval, cnn_pred):
+            if key == label and key == predict:
+                tp += 1
+            elif key != label and key != predict:
+                tn += 1
+            elif key != label and key == predict:
+                fp += 1
+            elif key == label and key != predict:
+                fn += 1
+        sens = tp / (tp + fn)
+        sensitivity.append(sens)
+        spec = tn / (tn + fp)
+        specificity.append(spec)
+        acc = (tp + tn) / (tp + tn + fp + fn)
+        accuracy.append(acc)
+        ppv = tp / (tp + fp)
+        precision.append(ppv)
+        tp, tn, fp, fn = 0, 0, 0, 0
+    print(sensitivity)
+    print(specificity)
+    print(accuracy)
+    print(precision)
+    for key, label in labels_index.items():
+        print(label + ' sensitivity: {0:.2f}%'.format(sensitivity[key]))
+        print(label + ' specificity: {0:.2f}%'.format(specificity[key]))
+        print(label + ' accuracy: {0:.2f}%'.format(accuracy[key]))
+        print(label + ' precision: {0:.2f}%'.format(precision[key]))

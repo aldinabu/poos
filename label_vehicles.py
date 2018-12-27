@@ -36,17 +36,3 @@ def label_vehicle(img, image_name, csv, dict):
                                                  (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.4, 255)
 
     return windowed_with_name
-
-"""
-src_dir = 'dataset/training_imagery'
-dst_dir = 'dataset/windowed_imagery'
-df = pd.read_csv('data/train.csv', sep=',')
-for filename in glob.glob(os.path.join(src_dir, '*.jpg')):
-    im = cv2.imread(filename)
-    name = filename.replace(src_dir, '')
-    img_name = name.replace('.jpg', '')
-    img_name = img_name.replace('\\', '')
-    contoured_img = label_vehicle(im, img_name, df)
-    cv2.imwrite(dst_dir + name, contoured_img)
-print("Done")
-"""

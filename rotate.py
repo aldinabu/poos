@@ -29,19 +29,3 @@ def rotate(im, tag, df):
     x, y, w, h = cv2.boundingRect(cnt)
     croped = image[y:y + h, x:x + w]
     return croped
-
-
-print("Working on it, please have patience")
-src_dir = 'data/masked_real_val/large vehicle/truck'
-df = pd.read_csv('data/train.csv', sep=',')
-br = 0
-for filename in glob.glob(os.path.join(src_dir, '*.jpg')):
-    im = cv2.imread(filename)
-    name = filename.replace(src_dir, '')
-    img_name = name.replace('.jpg', '')
-    img_name = img_name.replace('\\', '')
-    rot = rotate(im, img_name, df)
-    cv2.imwrite('data/masked_rotated_val/large vehicle/truck/' + img_name + '.jpg', rot)
-    br += 1
-    print(br)
-print("Done")

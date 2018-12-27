@@ -28,24 +28,12 @@ def subtract_roi(img, image_name, csv):
     return masked
 
 
-print("Working on it, please have patience")
-src_dir = 'data2/train'
-dst_dir = 'data2/preprocessed_train'
-df = pd.read_csv('data2/train.csv', sep=',')
-br = 0
-for filename in glob.glob(os.path.join(src_dir, '*.jpg')):
-    im = cv2.imread(filename)
-    name = filename.replace(src_dir, '')
-    img_name = name.replace('.jpg', '')
-    img_name = img_name.replace('\\', '')
+def preprocessing(im, img_name, df):
     denoised = denoising.denoise(im)
     bright = filtering.gamma_correction(denoised)
     contrast = filtering.sigmoid_correction(bright)
     histogram = filtering.clahehist(contrast)
-    subtracted = subtract_roi(im, img_name, df)
+    # subtracted = subtract_roi(im, img_name, df)
     mask1 = masking.create_mask(histogram, img_name, df)
-    dst = cv2.addWeighted(subtracted, 1, mask1, 1, 0)
-    cv2.imwrite(dst_dir + name, dst)
-    br += 1
-    print(br)
-print("Done")
+    # dst = cv2.addWeighted(subtracted, 1, mask1, 1, 0)
+    return mask1

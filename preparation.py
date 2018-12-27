@@ -5,8 +5,8 @@ import glob
 import os
 
 
-def create_mask(img, image_name, csv):
-    dst_dir = 'data2/masked_train/'
+def create_mask_of_tag(img, image_name, csv):
+    dst_dir = 'data2/masked_val/'
     image_id_new = int(image_name)
     selection = csv[csv.image_id == image_id_new]
 
@@ -55,18 +55,3 @@ def create_mask(img, image_name, csv):
                 cv2.imwrite(dst_dir + add_dst + 'cement mixer/' + str(row.tag_id) + '.jpg', masked)
             elif str(row.sub_class) == "tanker":
                 cv2.imwrite(dst_dir + add_dst + 'tanker/' + str(row.tag_id) + '.jpg', masked)
-
-
-print("Working on it, please have patience")
-src_dir = 'data2/preprocessed_train'
-df = pd.read_csv('data2/train.csv', sep=',')
-br = 0
-for filename in glob.glob(os.path.join(src_dir, '*.jpg')):
-    im = cv2.imread(filename)
-    name = filename.replace(src_dir, '')
-    img_name = name.replace('.jpg', '')
-    img_name = img_name.replace('\\', '')
-    create_mask(im, img_name, df)
-    br += 1
-    print(br)
-print("Done")

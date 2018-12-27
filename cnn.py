@@ -10,8 +10,8 @@ train_datagen = ImageDataGenerator(rescale=1./255,
 
 test_datagen = ImageDataGenerator(rescale=1./255)
 
-traindf = pd.read_csv('data/train_csv_new.csv', sep=',')
-testdf = pd.read_csv('data/test_csv_new.csv', sep=',')
+#traindf = pd.read_csv('data/train_csv_new.csv', sep=',')
+#testdf = pd.read_csv('data/test_csv_new.csv', sep=',')
 
 """
 training_set = train_datagen.flow_from_dataframe(dataframe=traindf,
@@ -32,12 +32,12 @@ test_set = test_datagen.flow_from_dataframe(dataframe=testdf,
                                             class_mode='categorical',
                                             has_ext=False)"""
 
-training_set = train_datagen.flow_from_directory('data/masked_rotated_h_train/small vehicle/',
+training_set = train_datagen.flow_from_directory('data2/masked_rotated_h_train/small vehicle/',
                                                  target_size=(30, 75),
                                                  batch_size=32,
                                                  class_mode='categorical')
 
-test_set = test_datagen.flow_from_directory('data/masked_rotated_h_test/small vehicle/',
+test_set = test_datagen.flow_from_directory('data2/masked_rotated_h_test/small vehicle/',
                                             target_size=(30, 75),
                                             batch_size=32,
                                             class_mode='categorical')
@@ -74,10 +74,10 @@ cnn_classifier.compile(optimizer='adam',
 
 cnn_classifier.fit_generator(training_set,
                              steps_per_epoch=6406,
-                             epochs=6,
+                             epochs=10,
                              validation_data=test_set,
                              validation_steps=903)
 
 # saving model and weights
-cnn_classifier.save_weights('vehicle_classification_weights_dropout.h5')
-cnn_classifier.save('vehicle_classification_model_dropout.h5')
+cnn_classifier.save_weights('data2/vehicle_classification_weights_dropout.h5')
+cnn_classifier.save('data2/vehicle_classification_model_dropout.h5')
