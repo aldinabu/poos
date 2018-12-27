@@ -10,27 +10,7 @@ train_datagen = ImageDataGenerator(rescale=1./255,
 
 test_datagen = ImageDataGenerator(rescale=1./255)
 
-#traindf = pd.read_csv('data/train_csv_new.csv', sep=',')
-#testdf = pd.read_csv('data/test_csv_new.csv', sep=',')
 
-"""
-training_set = train_datagen.flow_from_dataframe(dataframe=traindf,
-                                                 directory='data/masked_rotated_h_train/small vehicle/',
-                                                 x_col='tag_id',
-                                                 y_col='sub_class',
-                                                 target_size=(30, 75),
-                                                 batch_size=32,
-                                                 class_mode='categorical',
-                                                 has_ext=False)
-
-test_set = test_datagen.flow_from_dataframe(dataframe=testdf,
-                                            directory='data/masked_rotated_h_test/small vehicle/',
-                                            x_col='tag_id',
-                                            y_col='sub_class',
-                                            target_size=(30, 75),
-                                            batch_size=32,
-                                            class_mode='categorical',
-                                            has_ext=False)"""
 
 training_set = train_datagen.flow_from_directory('data2/masked_rotated_h_train/small vehicle/',
                                                  target_size=(30, 75),
